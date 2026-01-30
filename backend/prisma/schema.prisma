@@ -15,9 +15,100 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String   
-  createdAt DateTime @default(now())
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now()) @map("created_at")
+  profile       Profile?
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  phone     String?
+  birthday  DateTime?
+  gender    String?
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+// --- Catálogo ---
+
+model Category {
+  id          String   @id @default(uuid())
+  description String
+  courses     Course[]
+  leads       Lead[]   // Relacionamento para o gráfico de interesse
+
+  @@map("categories")
+}
+
+model Course {
+  id            String         @id @default(uuid())
+  name          String
+  price         Decimal        @db.Decimal(10, 2)
+  categoryId    String         @map("category_id")
+  category      Category       @relation(fields: [categoryId], references: [id])
+  subscriptions Subscription[]
+
+  @@map("courses")
+}
+
+// --- Vendas e Financeiro ---
+
+model Subscription {
+  id           String        @id @default(uuid())
+  status       String        // active, pending, cancelled, finished
+  saleDate     DateTime      @default(now()) @map("sale_date")
+  paidPrice    Decimal       @map("paid_price") @db.Decimal(10, 2)
+  userId       String        @map("user_id")
+  courseId     String        @map("course_id")
+  
+  user         User          @relation(fields: [userId], references: [id])
+  course       Course        @relation(fields: [courseId], references: [id])
+  payments     Payment[]
+  cancellation Cancellation?
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             String       @id @default(uuid())
+  status         String       // paid, pending, failed
+  paidAt         DateTime?    @map("paid_at")
+  subscriptionId String       @map("subscription_id")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@map("payments")
+}
+
+model Cancellation {
+  id               String       @id @default(uuid())
+  reason           String
+  cancellationDate DateTime     @default(now()) @map("cancellation_date")
+  subscriptionId   String       @unique @map("subscription_id")
+  subscription     Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@map("cancellations")
+}
+
+// --- Marketing ---
+
+model Lead {
+  id               String    @id @default(uuid())
+  status           String    // new, in_progress, converted, lost
+  source           String    // instagram, google, etc
+  contactData      String    @map("contact_data")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  conversionDate   DateTime? @map("conversion_date")
+  
+  interestedCategoryId String @map("interested_category_id")
+  category             Category @relation(fields: [interestedCategoryId], references: [id])
+
+  @@map("leads")
 }

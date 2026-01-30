@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Course, PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -27,18 +27,29 @@ async function main() {
 
   // 3. Criar Cursos
   const coursesData = [
-    { name: "6º Ano - Completo", price: 450.0, categoryId: catFundamental.id },
-    { name: "9º Ano - Intensivo", price: 480.0, categoryId: catFundamental.id },
+    { name: "6º Ano - Completo", price: 45.0, categoryId: catFundamental.id },
+    { name: "7º Ano - Completo", price: 45.0, categoryId: catFundamental.id },
+    { name: "8º Ano - Completo", price: 45.0, categoryId: catFundamental.id },
+    { name: "9º Ano - Intensivo", price: 55.0, categoryId: catFundamental.id },
     {
-      name: "3º Ano Médio - Foco Vestibular",
-      price: 550.0,
+      name: "1º Ano Médio",
+      price: 90.0,
       categoryId: catMedio.id,
     },
-    { name: "Extensivo ENEM 2026", price: 600.0, categoryId: catEnem.id },
-    { name: "Revisão Turbo ENEM", price: 299.9, categoryId: catEnem.id },
+    {
+      name: "2º Ano Médio",
+      price: 90.0,
+      categoryId: catMedio.id,
+    },
+    {
+      name: "3º Ano Médio - Foco Vestibular",
+      price: 120.0,
+      categoryId: catMedio.id,
+    },
+    { name: "Extensivo ENEM 2026", price: 200.0, categoryId: catEnem.id },
   ];
 
-  const createdCourses = [];
+  const createdCourses: Course[] = [];
   for (const c of coursesData) {
     const course = await prisma.course.create({ data: c });
     createdCourses.push(course);

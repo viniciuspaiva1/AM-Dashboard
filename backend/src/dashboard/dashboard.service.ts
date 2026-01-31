@@ -18,7 +18,8 @@ export class DashboardService {
       salesByCourse,
       salesByCategory,
       recentSales,
-      leadsStatus, // Bônus: dados de leads
+      leadsStatus,
+      salesHistory,
     ] = await Promise.all([
       this.getSummary(where),
       this.getSalesByCourse(where),
@@ -29,6 +30,7 @@ export class DashboardService {
         filters.startDate,
         filters.endDate,
       ),
+      this.getSalesHistory(where),
     ]);
 
     // 3. Retorna o objeto consolidado
@@ -38,6 +40,7 @@ export class DashboardService {
         salesByCourse,
         salesByCategory,
         leadsStatus,
+        salesHistory,
       },
       table: recentSales,
     };
@@ -213,5 +216,55 @@ export class DashboardService {
     });
 
     return result.map((r) => ({ status: r.status, count: r._count.id }));
+  }
+
+  private async getSalesHistory(where: Prisma.SubscriptionWhereInput) {
+    const sales = await this.prisma.subscription.findMany({
+      where,
+      select: {
+        saleDate: true,
+        paidPrice: true,
+        course: {
+          select: { name: true },
+        },
+      },
+      orderBy: {
+        saleDate: "asc",
+      },
+    });
+
+    // Estrutura intermediária: { "Nome do Curso": { "2024-01-01": 150, "2024-01-02": 300 } }
+    const groupedByCourse: Record<string, Record<string, number>> = {};
+
+    sales.forEach((sale) => {
+      const courseName = sale.course.name;
+      const dateKey = sale.saleDate.toISOString().split("T")[0];
+
+      if (!groupedByCourse[courseName]) {
+        groupedByCourse[courseName] = {};
+      }
+
+      if (!groupedByCourse[courseName][dateKey]) {
+        groupedByCourse[courseName][dateKey] = 0;
+      }
+
+      groupedByCourse[courseName][dateKey] += Number(sale.paidPrice);
+    });
+
+    // Transforma no formato final de Séries para o Frontend
+    return Object.entries(groupedByCourse).map(([courseName, datesMap]) => {
+      const dataPoints = Object.entries(datesMap).map(([date, value]) => ({
+        date,
+        value,
+      }));
+
+      // Ordena as datas dentro de cada série para garantir que a linha do gráfico não fique "rabiscada"
+      dataPoints.sort((a, b) => a.date.localeCompare(b.date));
+
+      return {
+        name: courseName,
+        data: dataPoints,
+      };
+    });
   }
 }

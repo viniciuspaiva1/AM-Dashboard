@@ -37,7 +37,7 @@ export class AuthController {
   // Rota: GET /auth/user/:id
   // Alterei para não conflitar com rotas futuras e ficar claro que busca um user
   @Get("user/:id")
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id", ParseIntPipe) id: string) {
     return this.usersService.findOne(id);
   }
 }

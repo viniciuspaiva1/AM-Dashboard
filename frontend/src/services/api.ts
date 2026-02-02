@@ -1,8 +1,20 @@
 // src/services/api.ts
 import axios from "axios";
+import qs from "qs";
 
 const api = axios.create({
   baseURL: "http://localhost:3000",
+  paramsSerializer: (params) =>
+    qs.stringify(params, {
+      arrayFormat: "repeat", // <-- remove os []
+      skipNulls: true,
+      filter: (prefix, value) => {
+        if (Array.isArray(value) && value.length === 0) {
+          return undefined; // não envia array vazio
+        }
+        return value;
+      },
+    }),
 });
 
 // Interceptor para ADICIONAR o token em cada requisição

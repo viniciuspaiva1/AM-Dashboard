@@ -231,7 +231,7 @@ export default function Dashboard() {
                     value: 90,
                   },
                   {
-                    date: "2026-01-15",
+                    date: "2026-01-03",
                     value: 90,
                   },
                 ],

@@ -17,6 +17,7 @@ import {
   Area,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LineChartCourses } from "./LineChartCourses";
 
 // Cores consistentes (paleta Slate/Blue moderna)
 const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#f59e0b", "#10b981"];
@@ -43,6 +44,11 @@ export function DashboardCharts({ data }: ChartProps) {
       (a: any, b: any) =>
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
+
+  const enhancedPieData = data.charts.salesByCategory.map((entry, index) => ({
+    ...entry,
+    fill: COLORS[index % COLORS.length], // Injeta a cor diretamente no objeto
+  }));
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
@@ -82,39 +88,8 @@ export function DashboardCharts({ data }: ChartProps) {
       </Card>
 
       {/* 2. GRÁFICO DE LINHA - Evolução Histórica */}
-      <Card className="col-span-1 shadow-md">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">
-            Evolução de Vendas
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={processedHistory}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="date"
-                fontSize={10}
-                tickFormatter={(str) =>
-                  new Date(str).toLocaleDateString("pt-BR")
-                }
-              />
-              <YAxis fontSize={12} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8b5cf6"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-                name="Vendas Totais"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+
+      <LineChartCourses salesHistory={data.charts.salesHistory} />
 
       {/* 3. GRÁFICO DE PIZZA - Categorias */}
       <Card className="col-span-1 shadow-md">
@@ -127,22 +102,23 @@ export function DashboardCharts({ data }: ChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data.charts.salesByCategory}
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
+                data={enhancedPieData} // Usando os dados já com a cor injetada
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
                 dataKey="value"
                 nameKey="category"
-              >
-                {data.charts.salesByCategory.map((_: any, index: number) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend verticalAlign="bottom" height={36} />
+                stroke="none"
+                // O Recharts 3.x/4.x reconhece a chave 'fill' dentro do objeto de cada item do array 'data'
+              />
+              <Tooltip
+                contentStyle={{
+                  borderRadius: "8px",
+                  border: "none",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                }}
+              />
+              <Legend verticalAlign="bottom" height={36} iconType="circle" />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
@@ -166,7 +142,7 @@ export function DashboardCharts({ data }: ChartProps) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="date" hide />
-              <YAxis fontSize={12} />
+              <YAxis fontSize={12} tickFormatter={(val) => `R$ ${val}`} />
               <Tooltip />
               <Area
                 type="monotone"

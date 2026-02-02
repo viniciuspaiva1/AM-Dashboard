@@ -53,17 +53,10 @@ export class DashboardService {
     filters: GetDashboardFilterDto,
   ): Prisma.SubscriptionWhereInput {
     const where: Prisma.SubscriptionWhereInput = {};
+
     const courseWhere: Prisma.CourseWhereInput = {};
 
-    // Filtro de Data
-    if (filters.startDate && filters.endDate) {
-      where.saleDate = {
-        gte: new Date(filters.startDate),
-        lte: new Date(filters.endDate),
-      };
-    }
-
-    // Filtro de Curso (LIKE / Case Insensitive)
+    // 1. Filtro por Texto (Search Bar)
     if (filters.courseName) {
       courseWhere.name = {
         contains: filters.courseName,
@@ -71,19 +64,36 @@ export class DashboardService {
       };
     }
 
-    // Filtro de Categoria
+    // 2. Filtro por Checkboxes (IDs específicos)
+    // Usamos o operador 'in' do Prisma que equivale ao SQL IN ('id1', 'id2')
+    if (filters.courseIds && filters.courseIds.length > 0) {
+      courseWhere.id = {
+        in: filters.courseIds,
+      };
+    }
+
+    // 3. Filtro por Categoria
     if (filters.categoryId) {
       courseWhere.categoryId = filters.categoryId;
     }
 
-    // Filtro de Status
+    // Se tivermos alguma regra de curso, atribuímos ao objeto principal
+    if (Object.keys(courseWhere).length > 0) {
+      where.course = courseWhere;
+    }
+
+    // Filtros globais (Data e Status)
+    if (filters.startDate && filters.endDate) {
+      where.saleDate = {
+        gte: new Date(filters.startDate),
+        lte: new Date(filters.endDate),
+      };
+    }
+
     if (filters.status) {
       where.status = filters.status;
     }
 
-    if (Object.keys(courseWhere).length > 0) {
-      where.course = courseWhere;
-    }
     return where;
   }
 

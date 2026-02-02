@@ -277,4 +277,12 @@ export class DashboardService {
       };
     });
   }
+
+  async getCategories() {
+    return this.prisma.category.findMany();
+  }
+
+  async getCourses() {
+    return this.prisma.course.findMany();
+  }
 }

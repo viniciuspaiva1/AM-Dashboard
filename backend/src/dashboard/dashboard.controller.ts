@@ -12,4 +12,13 @@ export class DashboardController {
   getDashboardData(@Query() filters: GetDashboardFilterDto) {
     return this.dashboardService.getDashboardData(filters);
   }
+
+  @Get("options")
+  async getDashboardOptions() {
+    const [categories, courses] = await Promise.all([
+      this.dashboardService.getCategories(),
+      this.dashboardService.getCourses(),
+    ]);
+    return { categories, courses };
+  }
 }

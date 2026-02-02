@@ -33,19 +33,12 @@ export function Header() {
             <LayoutDashboard className="h-5 w-5" />
           </div>
           <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-            Nexus<span className="text-primary">Dash</span>
+            AM-Dashboard
           </span>
         </div>
 
         {/* Lado Direito: Ações e Usuário */}
         <div className="flex items-center gap-4">
-          {/* Botão de Notificações (Opcional - Estético) */}
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <Bell className="h-5 w-5" />
-          </Button>
-
-          <div className="h-6 w-[1px] bg-slate-200 dark:bg-slate-800" />
-
           {/* Menu do Usuário */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

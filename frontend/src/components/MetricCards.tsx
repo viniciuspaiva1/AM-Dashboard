@@ -21,33 +21,41 @@ export function MetricCards({ summary }: MetricCardsProps) {
     {
       title: "Receita Total",
       value: formatter.format(summary.totalRevenue),
-      icon: <DollarSign className="h-4 w-4 text-emerald-500" />,
-      description: "+12.5% em relação ao mês passado",
+      icon: <DollarSign className="h-4 w-4 " />,
+      description: "Total recebido no mês",
+      bgColor: "#3fcc8c",
     },
     {
       title: "Total de Vendas",
       value: summary.totalSales.toString(),
       icon: <ShoppingCart className="h-4 w-4 text-blue-500" />,
-      description: "30 vendas confirmadas",
+      description: "",
+      bgColor: "#d6a080",
     },
     {
       title: "Ticket Médio",
       value: formatter.format(summary.averageTicket),
       icon: <Ticket className="h-4 w-4 text-purple-500" />,
       description: "Valor médio por aluno",
+      bgColor: "#b7c4f0",
     },
     {
-      title: "Taxa de Conversão",
-      value: "4.8%", // Valor exemplo (poderia vir da API)
+      title: "Novos Leads",
+      value: "", // Valor exemplo (poderia vir da API)
       icon: <TrendingUp className="h-4 w-4 text-orange-500" />,
-      description: "Leads vs Vendas",
+      description: "Potenciais Clientes",
+      bgColor: "#e0f09e",
     },
   ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric, index) => (
-        <Card key={index} className="shadow-sm border-muted/60">
+        <Card
+          key={index}
+          className="shadow-sm border-muted/60"
+          style={{ backgroundColor: metric.bgColor }}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {metric.title}

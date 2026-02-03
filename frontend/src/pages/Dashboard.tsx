@@ -79,7 +79,12 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {apiData && <MetricCards summary={apiData?.summary} />}
+            {apiData && (
+              <MetricCards
+                summary={apiData?.summary}
+                leadsStatus={apiData?.leadsStatus}
+              />
+            )}
             {apiData && <DashboardCharts data={apiData} />}
           </>
         )}

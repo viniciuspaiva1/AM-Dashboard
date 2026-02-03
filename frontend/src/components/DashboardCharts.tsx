@@ -8,11 +8,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
-  Cell,
   AreaChart,
   Area,
 } from "recharts";
@@ -45,10 +42,12 @@ export function DashboardCharts({ data }: ChartProps) {
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
-  const enhancedPieData = data.charts.salesByCategory.map((entry, index) => ({
-    ...entry,
-    fill: COLORS[index % COLORS.length], // Injeta a cor diretamente no objeto
-  }));
+  const enhancedPieData = data.charts.salesByCategory.map(
+    (entry: any, index: any) => ({
+      ...entry,
+      fill: COLORS[index % COLORS.length], // Injeta a cor diretamente no objeto
+    }),
+  );
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">

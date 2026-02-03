@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LayoutDashboard, LogOut, User, Settings, Bell } from "lucide-react";
+import { LayoutDashboard, LogOut, User, Settings } from "lucide-react";
 
 export function Header() {
   const { user, signOut } = useAuth();

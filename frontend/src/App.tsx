@@ -1,8 +1,8 @@
-import React, { type JSX } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import type { JSX } from "react/jsx-runtime";
 
 // Componente de Proteção de Rota
 function PrivateRoute({ children }: { children: JSX.Element }) {

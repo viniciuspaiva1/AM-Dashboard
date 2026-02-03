@@ -13,36 +13,28 @@ export class DashboardService {
     const where = this.buildWhereClause(filters);
 
     // 2. Executa as queries em paralelo para performance
-    const [
-      summary,
-      salesByCourse,
-      salesByCategory,
-      recentSales,
-      leadsStatus,
-      salesHistory,
-    ] = await Promise.all([
-      this.getSummary(where),
-      this.getSalesByCourse(where),
-      this.getSalesByCategory(where),
-      this.getRecentSales(where),
-      this.getLeadsOverview(
-        filters.categoryId,
-        filters.startDate,
-        filters.endDate,
-      ),
-      this.getSalesHistory(where),
-    ]);
+    const [summary, salesByCourse, salesByCategory, leadsStatus, salesHistory] =
+      await Promise.all([
+        this.getSummary(where),
+        this.getSalesByCourse(where),
+        this.getSalesByCategory(where),
+        this.getLeadsOverview(
+          filters.categoryId,
+          filters.startDate,
+          filters.endDate,
+        ),
+        this.getSalesHistory(where),
+      ]);
 
     // 3. Retorna o objeto consolidado
     return {
       summary,
+      leadsStatus,
       charts: {
         salesByCourse,
         salesByCategory,
-        leadsStatus,
         salesHistory,
       },
-      table: recentSales,
     };
   }
 
@@ -190,24 +182,7 @@ export class DashboardService {
     }));
   }
 
-  // 5. Tabela: Vendas Recentes
-  private async getRecentSales(where: Prisma.SubscriptionWhereInput) {
-    return this.prisma.subscription.findMany({
-      where,
-      take: 10,
-      orderBy: { saleDate: "desc" },
-      select: {
-        id: true,
-        status: true,
-        saleDate: true,
-        paidPrice: true,
-        user: { select: { name: true, email: true } },
-        course: { select: { name: true } },
-      },
-    });
-  }
-
-  // 6. Marketing: Leads por Status (Filtra leads pela categoria selecionada também)
+  // 5. Marketing: Leads por Status (Filtra leads pela categoria selecionada também)
   private async getLeadsOverview(
     categoryId?: string,
     start?: string,

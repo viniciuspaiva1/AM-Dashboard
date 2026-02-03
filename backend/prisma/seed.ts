@@ -56,7 +56,7 @@ async function main() {
   }
 
   // 4. Criar Usuários, Perfis e Vendas (Simulando últimos 6 meses)
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 200; i++) {
     const randomDate = faker.date.past({ years: 0.5 }); // Vendas nos últimos 6 meses
 
     const user = await prisma.user.create({
@@ -133,7 +133,7 @@ async function main() {
     }
   }
   // 5. Criar Leads (Para o gráfico de conversão)
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 120; i++) {
     await prisma.lead.create({
       data: {
         status: faker.helpers.arrayElement([

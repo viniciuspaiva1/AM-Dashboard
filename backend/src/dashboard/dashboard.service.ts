@@ -148,12 +148,6 @@ export class DashboardService {
 
   // 4. Gráfico: Vendas por Categoria
   private async getSalesByCategory(where: Prisma.SubscriptionWhereInput) {
-    // Como a categoria está "longe" (Subscription -> Course -> Category),
-    // o groupBy do Prisma tem limitações com relações profundas.
-    // Vamos buscar os cursos filtrados e agrupar manualmente ou fazer query raw se precisar performance extrema.
-    // Solução Elegante com Prisma:
-
-    // Primeiro buscamos as subscriptions com a relação incluída
     const sales = await this.prisma.subscription.findMany({
       where,
       select: {
@@ -168,7 +162,6 @@ export class DashboardService {
       },
     });
 
-    // Agrupamento em memória (JS)
     const grouped = sales.reduce((acc, curr) => {
       const catName = curr.course.category.description;
       if (!acc[catName]) acc[catName] = 0;

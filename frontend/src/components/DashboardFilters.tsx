@@ -24,7 +24,6 @@ export interface FilterState {
   courseName?: string;
   courseIds?: string[];
   categoryId?: string;
-  status?: string;
 }
 
 interface Props {
@@ -162,25 +161,6 @@ export function DashboardFilters({
                   {cat.description}
                 </SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Select de Status */}
-        <div className="space-y-2">
-          <Label>Status</Label>
-          <Select
-            value={filters.status}
-            onValueChange={(v) => setFilters({ ...filters, status: v })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Qualquer status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new">Novo</SelectItem>
-              <SelectItem value="in_progress">Em Progresso</SelectItem>
-              <SelectItem value="converted">Convertido</SelectItem>
-              <SelectItem value="lost">Perdido</SelectItem>
             </SelectContent>
           </Select>
         </div>

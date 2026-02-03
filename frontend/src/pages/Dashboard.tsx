@@ -17,11 +17,6 @@ export default function Dashboard() {
   const [options, setOptions] = useState<any>(null);
   const [currentFilters, setCurrentFilters] = useState<FilterState>({
     courseIds: [],
-    startDate: "",
-    endDate: "",
-    courseName: "",
-    categoryId: "",
-    status: "",
   });
 
   useEffect(() => {

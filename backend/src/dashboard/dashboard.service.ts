@@ -211,34 +211,27 @@ export class DashboardService {
       },
     });
 
-    // Estrutura intermediária: { "Nome do Curso": { "2024-01-01": 150, "2024-01-02": 300 } }
-    const groupedByCourse: Record<string, Record<string, number>> = {};
+    const groupedByCourse: Record<
+      string,
+      Array<{ date: string; value: number }>
+    > = {};
 
     sales.forEach((sale) => {
       const courseName = sale.course.name;
-      const dateKey = sale.saleDate.toISOString().split("T")[0];
+
+      const fullDate = sale.saleDate.toISOString();
 
       if (!groupedByCourse[courseName]) {
-        groupedByCourse[courseName] = {};
+        groupedByCourse[courseName] = [];
       }
 
-      if (!groupedByCourse[courseName][dateKey]) {
-        groupedByCourse[courseName][dateKey] = 0;
-      }
-
-      groupedByCourse[courseName][dateKey] += Number(sale.paidPrice);
+      groupedByCourse[courseName].push({
+        date: fullDate,
+        value: Number(sale.paidPrice),
+      });
     });
 
-    // Transforma no formato final de Séries para o Frontend
-    return Object.entries(groupedByCourse).map(([courseName, datesMap]) => {
-      const dataPoints = Object.entries(datesMap).map(([date, value]) => ({
-        date,
-        value,
-      }));
-
-      // Ordena as datas dentro de cada série para garantir que a linha do gráfico não fique "rabiscada"
-      dataPoints.sort((a, b) => a.date.localeCompare(b.date));
-
+    return Object.entries(groupedByCourse).map(([courseName, dataPoints]) => {
       return {
         name: courseName,
         data: dataPoints,

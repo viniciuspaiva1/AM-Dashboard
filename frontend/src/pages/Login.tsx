@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import api from "@/services/api"; // Usando sua instância de API com interceptor
+import api from "@/services/api";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   Loader2,
 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -25,6 +27,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function Login() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -116,22 +119,32 @@ export default function Login() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Senha</Label>
-                </div>
+              <div className="relative">
                 <Input
                   id="password"
-                  type="password"
-                  className="h-12 border-slate-200 focus:ring-2 focus:ring-primary/20 transition-all"
+                  type={showPassword ? "text" : "password"}
+                  className="h-12 border-slate-200 pr-12 focus:ring-2 focus:ring-primary/20 transition-all"
                   {...register("password")}
                 />
-                {errors.password && (
-                  <p className="text-xs font-medium text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 p-1 rounded-md transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
+
+              {errors.password && (
+                <p className="text-xs font-medium text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <Button
